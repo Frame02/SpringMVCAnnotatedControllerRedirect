@@ -18,7 +18,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void saveProduct(Product product) {
-        Long id = idGenerator.getAndIncrement();
+        Long id = idGenerator.incrementAndGet();
         product.setId(id);
         productMap.put(id, product);
     }

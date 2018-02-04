@@ -3,6 +3,8 @@ package com.srikar.springmvc.controller;
 import com.srikar.springmvc.domain.Product;
 import com.srikar.springmvc.form.ProductForm;
 import com.srikar.springmvc.service.ProductService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,16 +19,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class ProductController {
 
+    private static final Log logger = LogFactory.getLog(ProductController.class);
+
     @Autowired
     private ProductService productService;
 
     @RequestMapping(value="/product_input", method={RequestMethod.GET})
-    public String getProuctForm(){
-        return "inputRroduct";
+    public String getProductForm(){
+        logger.info("Retrieving product input form...");
+        return "inputProduct";
     }
 
-    @RequestMapping(value="/save_product", method={RequestMethod.POST})
+    @RequestMapping(value= "/product_save", method={RequestMethod.POST})
     public String saveProductDetails(ProductForm productForm, Model model, RedirectAttributes redirectAttributes){
+        logger.info("Saving product details...");
         Product product = new Product();
         product.setName(productForm.getName());
         product.setDescription(productForm.getDescription());
@@ -38,15 +44,16 @@ public class ProductController {
         }
 
         productService.saveProduct(product);
-        redirectAttributes.addFlashAttribute("message", "The product has been successfully saved!");
-        return "redirect:/product_saved/" + product.getId();
+        redirectAttributes.addFlashAttribute("message", "The product has been successfully added!");
+        return "redirect:/product_view/" + product.getId();
     }
 
-    @RequestMapping(value="/product_saved/{id}", method={RequestMethod.GET})
+    @RequestMapping(value="/product_view/{id}", method={RequestMethod.GET})
     public String getSavedProduct(@PathVariable Long id, Model model){
+        logger.info("Viewing product details for product id: " + id);
         Product product = productService.getProduct(id);
         model.addAttribute("product", product);
-        return "savedProduct";
+        return "productView";
     }
 
 }
